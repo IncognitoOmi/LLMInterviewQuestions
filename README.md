@@ -261,6 +261,193 @@ This repository contains over 100+ interview questions for Large Language Models
 
 [Back to Top](#table-of-contents)
 
+## Fine-tune LLMs
+
+Bhai, fine-tuning ek pre-trained LLM ko specific task ke liye retrain karna hota hai, taaki wo domain-specific cheezein achhe se samajh sake.
+
+
+---
+
+🔹 1. Fine-Tuning Kyun Karte Hain? (Reason)
+
+Pre-trained LLMs general knowledge pe trained hote hain (Wikipedia, Books, Web data), par agar domain-specific task chahiye (Finance, Healthcare, Legal), toh:
+
+✅ Better Accuracy: General models financial ya legal language sahi se nahi samajhte, fine-tuning ke baad wo zyada relevant answers dete hain.
+✅ Terminology Samajhna: Example: "MAB" ICICI Bank me Minimum Average Balance hai, par general LLM ko ye nahi pata.
+✅ Bias Control: General models biased ho sakte hain, custom data se train karke bias reduce hota hai.
+✅ Task-Specific Behavior: Eg. Audit Reports analyze karna ya Fraud Detection ke liye AI improve karna.
+
+
+---
+
+🔹 2. Fine-Tuning Karne Ka Process (Kaise Karte Hain?)
+
+Fine-tuning ka 5-step process hota hai:
+
+Step 1: Base Model Select Karo
+
+GPT, BERT, RoBERTa, LLaMA, Falcon, T5 → Kis task ke liye best hai?
+
+
+Example: Finance ke liye RoBERTa sahi hai, par chatbot ke liye GPT best hai.
+
+
+---
+
+Step 2: Dataset Prepare Karo
+
+✅ Data Collection: Apna domain-specific data lo (audit reports, customer complaints, banking transactions).
+✅ Labeling: Supervised fine-tuning ke liye labeled data chahiye. Example: Fraudulent vs Non-Fraudulent Transactions.
+✅ Cleaning: Remove stopwords, lowercasing, punctuation clean-up.
+
+
+---
+
+Step 3: Fine-Tuning (Model Train Karo)
+
+✅ Hugging Face Transformers ya PyTorch/TensorFlow use karke fine-tune karte hain.
+
+📌 Example Code (PyTorch using Hugging Face)
+
+from transformers import AutoModelForSequenceClassification, Trainer, TrainingArguments
+
+model_name = "roberta-base"
+model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=2)
+
+training_args = TrainingArguments(
+    output_dir="./results",
+    evaluation_strategy="epoch",
+    learning_rate=2e-5,
+    per_device_train_batch_size=8,
+    per_device_eval_batch_size=8,
+    num_train_epochs=3
+)
+
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=train_data,
+    eval_dataset=val_data
+)
+
+trainer.train()
+
+☑ Learning Rate (2e-5) → Zyada chhota hoga to slow, zyada bada hoga to overfit.
+☑ Batch Size (8) → Memory pe depend karta hai.
+
+
+---
+
+Step 4: Model Evaluate & Optimize Karo
+
+✅ Metrics Check Karo: Accuracy, F1-score, Precision-Recall, Loss.
+✅ Hyperparameter Tuning:
+
+Learning Rate Adjust Karo (2e-5, 3e-5, 5e-5 try karo).
+
+Epochs Optimize Karo (3-5 epochs usually enough hote hain).
+✅ Overfitting Avoid Karo:
+
+Dropout Layers Add Karo.
+
+Early Stopping Use Karo.
+
+
+
+---
+
+Step 5: Deployment (Model Ko Use Karo)
+
+✅ On-Premise: FastAPI, Flask
+✅ Cloud: Azure ML, AWS Sagemaker, GCP AI
+✅ Edge Devices: Quantization (FP16, INT8) karna padta hai inference fast karne ke liye.
+
+Example: GPT-3 fine-tuned model ko Azure ML pe deploy karke API se connect kiya ja sakta hai.
+
+
+---
+
+🔹 3. Fine-Tuning Techniques (Kaunse Methods Hote Hain?)
+
+✅ 1. Full Fine-Tuning:
+
+Pura model train hota hai naye data pe.
+
+Zyada compute intensive hota hai (zyada RAM & GPU chahiye).
+
+Example: Finance-specific GPT-3 model banane ke liye.
+
+
+✅ 2. LoRA (Low-Rank Adaptation) - Best for Large Models
+
+Pura model retrain nahi hota, sirf kuch layers fine-tune hoti hain.
+
+Example: LLaMA ya GPT-4 ko Finance ke liye customize karna.
+
+
+✅ 3. Prefix-Tuning / Prompt Tuning
+
+Model train nahi hota, sirf prompts improve hote hain.
+
+Example: GPT ko prompt engineering se improve karna.
+
+
+✅ 4. Adapter-Based Fine-Tuning
+
+Model ke upar ek extra adapter layer add hoti hai.
+
+Kam compute cost me achha result deta hai.
+
+
+
+---
+
+🔹 4. Fine-Tuning Ke Disadvantages (Kya Problems Hoti Hain?)
+
+❌ High Compute Cost – Full fine-tuning ke liye High-end GPU chahiye (A100, V100, TPU-VMs).
+❌ Overfitting Risk – Agar zyada epochs chalaye ya kam data pe fine-tune kare, to model overfit ho sakta hai.
+❌ Data Privacy Issues – Agar model sensitive customer data pe fine-tune kare to data leakage risk hota hai.
+❌ Model Hallucinations – Fine-tuned model galat ya biased information de sakta hai.
+
+
+---
+
+🔹 5. Fine-Tuning Kab Karna Chahiye aur Kab Nahi?
+
+✅ Fine-Tuning Karna Chahiye Jab:
+
+General Model Task-Specific Cheezein Achhe Se Samajh Nahi Raha (Example: Finance, Legal, Healthcare).
+
+Company ka Proprietary Data ho jo public models ko nahi pata.
+
+Highly Accurate & Domain-Specific AI Chahiye (Example: Deloitte’s AI-enabled audit).
+
+
+❌ Fine-Tuning Avoid Karna Chahiye Jab:
+
+Model already achha perform kar raha hai aur sirf prompt engineering se improve ho sakta hai.
+
+Compute resources limited hain (Fine-tuning costly hota hai).
+
+Live customer data directly use nahi kar sakte (Data compliance issues).
+
+
+
+---
+
+🎯 Final Summary
+
+
+---
+
+🔥 Bhai Ab Ready Hai!
+
+Deloitte ka interviewer agar fine-tuning pe grilling kare, toh tu confidently process + techniques + business impact bata sakega.
+
+Aur kuch chahiye toh bata! 🚀
+
+
+
 ---
 
 *For answers for those questions please, visit [Mastering LLM](https://www.masteringllm.com/course/llm-interview-questions-and-answers?previouspage=allcourses&isenrolled=no#/home).*
